@@ -3,7 +3,7 @@ import Foundation
 
 
 protocol BindingViewDelegator: AnyObject {
-    func update(allMovies: [PopularMovieEntity])
+    func update(allMovies: [MovieViewModel])
 }
 
 // Refering the Interactor and then The View - Viceversa
@@ -14,10 +14,13 @@ class ListOfMoviePresenter {
     // MARK: Pointing or refering the interactor layer
     private let listOfMovieInteractor: ListOfMovieInteractor
     
-    var models: [PopularMovieEntity] = []
+    var viewModelsResults: [MovieViewModel] = []
+    private let mapper: Mapper
     
-    init(listOfMovieInteractor: ListOfMovieInteractor) {
+    
+    init(listOfMovieInteractor: ListOfMovieInteractor, mapper: Mapper = Mapper()) {
         self.listOfMovieInteractor = listOfMovieInteractor
+        self.mapper = mapper
     }
     
     //MARK: With this method we can call the Interactor whateve we want in order to make the http call
@@ -26,8 +29,9 @@ class ListOfMoviePresenter {
     func onViewAppear() {
         Task {
             // MARK The interactor gives back a result, we stored in following constant
-            models = await listOfMovieInteractor.getListOfMovies().results
-            viewUI?.update(allMovies: models)
+            let models = await listOfMovieInteractor.getListOfMovies().results
+            viewModelsResults  =  models.map(mapper.map(entity:))
+            viewUI?.update(allMovies: viewModelsResults)
         }
     }
 }

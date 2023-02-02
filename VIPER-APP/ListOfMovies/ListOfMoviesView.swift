@@ -28,7 +28,7 @@ class ListOfMoviewView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpTableView()
-        // Loading and calling the presente
+        // Loading and calling the presenter
         presenterReference?.onViewAppear()
         
         // The present give us back a result
@@ -50,25 +50,17 @@ class ListOfMoviewView: UIViewController {
     }
 }
 
-extension ListOfMoviewView: BindingViewDelegator {
-    func update(allMovies: [PopularMovieEntity]) {
-        print("Data results => \(allMovies)")
-        DispatchQueue.main.async {
-            self.moviesTableView.reloadData()
-        }
-    }
-}
 
 
 extension ListOfMoviewView: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        presenterReference!.models.count
+        presenterReference!.viewModelsResults.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! MovieCellView
-        cell.backgroundColor = .darkGray
-        let modelDataToCell = presenterReference!.models[indexPath.row]
+        cell.backgroundColor = .orange
+        let modelDataToCell = presenterReference!.viewModelsResults[indexPath.row]
         cell.configure(model: modelDataToCell)
         
         return cell
@@ -76,3 +68,13 @@ extension ListOfMoviewView: UITableViewDataSource {
     
     
 }
+
+extension ListOfMoviewView: BindingViewDelegator {
+    func update(allMovies: [MovieViewModel]) {
+        print("Data results => \(allMovies.count)")
+        DispatchQueue.main.async {
+            self.moviesTableView.reloadData()
+        }
+    }
+}
+
